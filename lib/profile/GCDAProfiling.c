@@ -22,6 +22,7 @@
 
 #include "InstrProfilingPort.h"
 #include "InstrProfilingUtil.h"
+#include "InstrProfilingPort.h" /* for COMPILER_RT_VISIBILITY */
 
 #include <errno.h>
 #include <fcntl.h>
@@ -231,6 +232,7 @@ static void unmap_file() {
  * profiling enabled will emit to a different file. Only one file may be
  * started at a time.
  */
+COMPILER_RT_VISIBILITY
 void llvm_gcda_start_file(const char *orig_filename, const char version[4],
                           uint32_t checksum) {
   const char *mode = "r+b";
@@ -298,6 +300,7 @@ void llvm_gcda_start_file(const char *orig_filename, const char version[4],
 /* Given an array of pointers to counters (counters), increment the n-th one,
  * where we're also given a pointer to n (predecessor).
  */
+COMPILER_RT_VISIBILITY
 void llvm_gcda_increment_indirect_counter(uint32_t *predecessor,
                                           uint64_t **counters) {
   uint64_t *counter;
@@ -320,6 +323,7 @@ void llvm_gcda_increment_indirect_counter(uint32_t *predecessor,
 #endif
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_gcda_emit_function(uint32_t ident, const char *function_name,
                              uint32_t func_checksum, uint8_t use_extra_checksum,
                              uint32_t cfg_checksum) {
@@ -346,6 +350,7 @@ void llvm_gcda_emit_function(uint32_t ident, const char *function_name,
     write_string(function_name);
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_gcda_emit_arcs(uint32_t num_counters, uint64_t *counters) {
   uint32_t i;
   uint64_t *old_ctrs = NULL;
@@ -397,6 +402,7 @@ void llvm_gcda_emit_arcs(uint32_t num_counters, uint64_t *counters) {
 #endif
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_gcda_summary_info() {
   const uint32_t obj_summary_len = 9; /* Length for gcov compatibility. */
   uint32_t i;
@@ -450,6 +456,7 @@ void llvm_gcda_summary_info() {
 #endif
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_gcda_end_file() {
   /* Write out EOF record. */
   if (output_file) {
@@ -474,6 +481,7 @@ void llvm_gcda_end_file() {
 #endif
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_register_writeout_function(writeout_fn fn) {
   struct writeout_fn_node *new_node = malloc(sizeof(struct writeout_fn_node));
   new_node->fn = fn;
@@ -487,6 +495,7 @@ void llvm_register_writeout_function(writeout_fn fn) {
   }
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_writeout_files(void) {
   struct writeout_fn_node *curr = writeout_fn_head;
 
@@ -496,6 +505,7 @@ void llvm_writeout_files(void) {
   }
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_delete_writeout_function_list(void) {
   while (writeout_fn_head) {
     struct writeout_fn_node *node = writeout_fn_head;
@@ -506,6 +516,7 @@ void llvm_delete_writeout_function_list(void) {
   writeout_fn_head = writeout_fn_tail = NULL;
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_register_flush_function(flush_fn fn) {
   struct flush_fn_node *new_node = malloc(sizeof(struct flush_fn_node));
   new_node->fn = fn;
@@ -519,6 +530,7 @@ void llvm_register_flush_function(flush_fn fn) {
   }
 }
 
+COMPILER_RT_VISIBILITY
 void __gcov_flush() {
   struct flush_fn_node *curr = flush_fn_head;
 
@@ -528,6 +540,7 @@ void __gcov_flush() {
   }
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_delete_flush_function_list(void) {
   while (flush_fn_head) {
     struct flush_fn_node *node = flush_fn_head;
@@ -538,6 +551,7 @@ void llvm_delete_flush_function_list(void) {
   flush_fn_head = flush_fn_tail = NULL;
 }
 
+COMPILER_RT_VISIBILITY
 void llvm_gcov_init(writeout_fn wfn, flush_fn ffn) {
   static int atexit_ran = 0;
 
